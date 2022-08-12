@@ -1,7 +1,6 @@
 package com.example.konte_examen_android_2022.adapter
 
 import android.content.Context
-import android.service.autofill.Dataset
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -36,7 +35,7 @@ class ToDoItemAdapter(
 
     }
 
-    //return number of items in the todoList
+    // return number of items in the todoList
 
     override fun getItemCount() = dataset.size
 
