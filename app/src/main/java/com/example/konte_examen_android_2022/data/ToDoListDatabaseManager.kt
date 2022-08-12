@@ -36,6 +36,12 @@ class ToDoListDatabaseManager(context: Context, factory:SQLiteDatabase.CursorFac
         return db.rawQuery("SELECT * FROM $TABLE_NAME", null)
     }
 
+    fun getTodaysTodo(date : String):Cursor{
+        val db = this.readableDatabase
+
+        return db.rawQuery("SELECT * FROM $TABLE_NAME WHERE $TASK_DATE LIKE $date", null)
+    }
+
     companion object{
         private val DATABASE_NAME = "TODO_LIST_DATABASE"
         private val DATABASE_VERSION = 1
