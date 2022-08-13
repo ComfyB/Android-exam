@@ -4,6 +4,7 @@ package com.example.konte_examen_android_2022.data
 import android.util.Log
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import org.json.JSONException
 import org.json.JSONObject
 import kotlin.concurrent.thread
 
@@ -18,18 +19,19 @@ class WebRequestHandler {
             val request = Request.Builder().url(url).get().build()
             val response = client.newCall(request).execute()
             val responseBody = response.body?.string()
-            val jsonResponse = JSONObject(JSONObject(responseBody.toString()).getString("magic"))
+            try {
+                val jsonResponse =
+                    JSONObject(JSONObject(responseBody.toString()).getString("magic"))
+                priorityType = jsonResponse.getString("type")
 
-            Log.i("JSONrespo", jsonResponse.toString())
-
-             priorityType = jsonResponse.getString("type")
-            Log.i("responsbody", responseBody.toString())
+            } catch (e: JSONException) {
+                e.printStackTrace();
+            }
         }.join()
         return when (priorityType?.lowercase()) {
             "affirmative" -> 1
             "neutral" -> 2
             else -> 3
-
         }
     }
 }

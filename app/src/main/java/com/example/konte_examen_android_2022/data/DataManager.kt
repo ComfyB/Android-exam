@@ -7,10 +7,10 @@ import com.example.konte_examen_android_2022.model.ToDoItem
 
 class DataManager {
 
-    fun getTodoForToday(context: Context): MutableList<ToDoItem> {
+    fun getTodoForToday(context: Context, finished : Int): MutableList<ToDoItem> {
         val http = WebRequestHandler()
         val db = ToDoListDatabaseManager(context, null)
-        val cursor = db.getToDo()
+        val cursor = db.getToDo(finished)
         val list = mutableListOf<ToDoItem>()
 
         while (cursor.moveToNext()) {
@@ -22,10 +22,11 @@ class DataManager {
                 else -> R.drawable.not_important_icon_64
 
             }
-            val obj = ToDoItem(cursor.getString(1), toDoImage)
+            val obj = ToDoItem(cursor.getString(1), toDoImage, cursor.getInt(2))
 
             list.add(obj)
         }
         return list
     }
+
 }

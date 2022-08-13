@@ -18,11 +18,10 @@ class MainActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-
-        val myDataset = DataManager().getTodoForToday(this)
+        val myDataset = DataManager().getTodoForToday(this,0)
 
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
+
         recyclerView.adapter = ToDoItemAdapter(this, myDataset)
 
         recyclerView.setHasFixedSize(true) // makes sure content don't change the size of recyclerview}

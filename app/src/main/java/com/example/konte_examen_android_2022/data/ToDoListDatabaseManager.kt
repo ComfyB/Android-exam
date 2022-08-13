@@ -11,7 +11,7 @@ class ToDoListDatabaseManager(context: Context?, factory:SQLiteDatabase.CursorFa
 
 
     override fun onCreate(db: SQLiteDatabase?) {
-        val query = ("CREATE TABLE $TABLE_NAME ($TODO_ID INTEGER PRIMARY KEY,$TASK_TEXT TEXT, $TASK_DATE TEXT)")
+        val query = ("CREATE TABLE $TABLE_NAME ($TODO_ID INTEGER PRIMARY KEY,$TASK_TEXT TEXT, $TASK_DATE TEXT, $IS_DONE INTEGER)")
         db?.execSQL(query)
     }
 
@@ -24,8 +24,9 @@ class ToDoListDatabaseManager(context: Context?, factory:SQLiteDatabase.CursorFa
         val c = Calendar.getInstance()
         val date = c.get(Calendar.DAY_OF_YEAR).and(Calendar.YEAR).toString()
         val values = ContentValues()
-        values.put("TASK_TEXT", text)
-        values.put("TASK_DATE", date)
+        values.put(TASK_TEXT, text)
+        values.put(TASK_DATE, date)
+        values.put(IS_DONE, 0)
 
         val db = this.writableDatabase
         db.insert(TABLE_NAME, null, values)
@@ -33,9 +34,17 @@ class ToDoListDatabaseManager(context: Context?, factory:SQLiteDatabase.CursorFa
         db.close();
     }
 
-    fun getToDo() : Cursor{
+    fun getToDo(done : Int) : Cursor{
         val db = this.readableDatabase
-        return db.rawQuery("SELECT * FROM $TABLE_NAME", null)
+        return db.rawQuery("SELECT * FROM $TABLE_NAME WHERE $IS_DONE LIKE $done", null)
+    }
+    fun modifyIsDoneState(todo : String,isDone : Int){
+        val db = this.writableDatabase
+        val done = isDone xor 1 //xor operation to flip the "bool" int
+
+        db.execSQL("UPDATE $TABLE_NAME SET $IS_DONE = $done WHERE $TASK_TEXT = \"$todo\"")
+
+
     }
 
     fun getTodaysTodo(date : String):Cursor{
@@ -46,10 +55,13 @@ class ToDoListDatabaseManager(context: Context?, factory:SQLiteDatabase.CursorFa
 
     companion object{
         private val DATABASE_NAME = "TODO_LIST_DATABASE"
-        private val DATABASE_VERSION = 2
+        private val DATABASE_VERSION = 3
         private val TABLE_NAME = "TODOS"
         private val TODO_ID = "TODO_ID"
         private val TASK_TEXT = "TASK_TEXT"
         private val TASK_DATE = "TASK_DATE"
+        private val IS_DONE = "IS_DONE"
+
+
     }
 }
