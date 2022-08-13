@@ -4,7 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 
 data class ToDoItem(
-    @StringRes val toDoItemTextID: Int,
+    @StringRes val toDoItemTextID: String,
     @DrawableRes val toDoItemIconID: Int
 )
 

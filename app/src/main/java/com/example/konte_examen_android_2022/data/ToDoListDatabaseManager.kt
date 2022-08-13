@@ -5,8 +5,9 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import java.util.*
 
-class ToDoListDatabaseManager(context: Context, factory:SQLiteDatabase.CursorFactory?) :  SQLiteOpenHelper(context, DATABASE_NAME, factory, DATABASE_VERSION)  {
+class ToDoListDatabaseManager(context: Context?, factory:SQLiteDatabase.CursorFactory?) :  SQLiteOpenHelper(context, DATABASE_NAME, factory, DATABASE_VERSION)  {
 
 
     override fun onCreate(db: SQLiteDatabase?) {
@@ -19,20 +20,21 @@ class ToDoListDatabaseManager(context: Context, factory:SQLiteDatabase.CursorFac
         onCreate(db)
     }
 
-    fun addToDo(text : String, date : String){
+    fun addToDo(text : String){
+        val c = Calendar.getInstance()
+        val date = c.get(Calendar.DAY_OF_YEAR).and(Calendar.YEAR).toString()
         val values = ContentValues()
-        values.put("TODO_ID", text)
+        values.put("TASK_TEXT", text)
         values.put("TASK_DATE", date)
 
         val db = this.writableDatabase
-        db.insert(TODO_ID, null, values)
+        db.insert(TABLE_NAME, null, values)
 
         db.close();
     }
 
     fun getToDo() : Cursor{
         val db = this.readableDatabase
-
         return db.rawQuery("SELECT * FROM $TABLE_NAME", null)
     }
 
@@ -44,7 +46,7 @@ class ToDoListDatabaseManager(context: Context, factory:SQLiteDatabase.CursorFac
 
     companion object{
         private val DATABASE_NAME = "TODO_LIST_DATABASE"
-        private val DATABASE_VERSION = 1
+        private val DATABASE_VERSION = 2
         private val TABLE_NAME = "TODOS"
         private val TODO_ID = "TODO_ID"
         private val TASK_TEXT = "TASK_TEXT"

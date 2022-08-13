@@ -30,9 +30,8 @@ class ToDoItemAdapter(
     //replacing the content of the view. called by
     override fun onBindViewHolder(holder: ToDoItemViewHolder, position: Int) {
         val item = dataset[position]
-        holder.textView.text = context.resources.getString(item.toDoItemTextID)
+        holder.textView.text = item.toDoItemTextID
         holder.imageView.setImageResource(item.toDoItemIconID)
-
     }
 
     // return number of items in the todoList
