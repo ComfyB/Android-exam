@@ -5,6 +5,10 @@ import androidx.annotation.DrawableRes
 data class ToDoItem(
     val toDoItemTextID: String,
     @DrawableRes val toDoItemIconID: Int,
-    val isDone: Int
-)
+    var isDone: Int,
+    var deleteTag: Boolean = false,
+    var moveToNextDay : Boolean = false
+) {
+
+}
 

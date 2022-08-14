@@ -1,13 +1,9 @@
 <resources>
     <string name="app_name">konte_Examen_android_2022</string>
-    <string name="button">Button</string>
+    <string name="execute_todo_list">done</string>
     <string name="to_do_today">To-do today:</string>
     <string name="result_from_8_ball">result from 8-ball</string>
-    <string name="ToDo1">Test eg m+snjdkfdsjkf.</string>
-    <string name="ToDo2">Test2.</string>
-    <string name="ToDo3">Test3.</string>
-    <string name="ToDo4">Test4.</string>
-    <string name="ToDo5">Test5.</string>
-    <string name="ToDo6">Test6.</string>
-    <string name="ToDo7">Test7.</string>
+    <string name="item_checkmark_delete_marker">item CheckMark Delete marker</string>
+    <string name="submit">submit icon</string>
+    <string name="input_hint">what to do?</string>
 </resources>

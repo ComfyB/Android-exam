@@ -38,7 +38,7 @@ class ToDoListDatabaseManager(context: Context?, factory:SQLiteDatabase.CursorFa
 
     fun getToDo(done : Int) : Cursor{
         val db = this.readableDatabase
-        return db.rawQuery("SELECT * FROM $TABLE_NAME WHERE $IS_DONE LIKE $done", null)
+        return db.rawQuery("SELECT * FROM $TABLE_NAME WHERE $IS_DONE LIKE $done LIMIT 1", null)
     }
 
     fun modifyIsDoneState(todo : String, isDone : Int){

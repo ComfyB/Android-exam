@@ -6,20 +6,22 @@ import com.example.konte_examen_android_2022.R
 import com.example.konte_examen_android_2022.model.ToDoItem
 
 class DataManager {
+    private val toDoItems = mutableListOf<ToDoItem>()
 
     //function which gets the todoitems from the database
     fun getTodoForToday(context: Context, finished : Int): MutableList<ToDoItem> {
         val http = WebRequestHandler()
         val db = ToDoListDatabaseManager(context, null)
         val cursor = db.getTodaysTodo()
-        val toDoItems = mutableListOf<ToDoItem>()
 
         //loop through the cursor and add the todoitems to the list
         while (cursor.moveToNext()) {
             val priority = cursor.getInt(4)
 
             if(priority == 4){
-                val req = http.askQuestion(cursor.getString(1))
+                val string : String = cursor.getString(1)
+                Log.i("requestString", string)
+                val req = http.askQuestion(string)
                 Log.i("req",req.toString())
                 val toDoImage: Int = when (req) {
                     1 -> R.drawable.important_icon_64
@@ -43,6 +45,12 @@ class DataManager {
 
         }
         return toDoItems
+    }
+
+   fun addTodo(context: Context, todo: String) {
+        val db = ToDoListDatabaseManager(context, null)
+        db.addToDo(todo, 4)
+        getTodoForToday(context, 0)
     }
 
 }

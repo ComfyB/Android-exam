@@ -8,9 +8,9 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat.getColor
 import androidx.recyclerview.widget.RecyclerView
 import com.example.konte_examen_android_2022.R
-import com.example.konte_examen_android_2022.data.ToDoListDatabaseManager
 import com.example.konte_examen_android_2022.model.ToDoItem
 import com.google.android.material.card.MaterialCardView
 
@@ -24,6 +24,7 @@ class ToDoItemAdapter(
         val textView: TextView = view.findViewById(R.id.to_do_item_title)
         val imageView: ImageView = view.findViewById(R.id.to_do_icon)
         val card: MaterialCardView = view.findViewById(R.id.material_card_todo)
+        val deleteMarker: ImageView = view.findViewById(R.id.delete_marker)
 
     }
 
@@ -35,37 +36,47 @@ class ToDoItemAdapter(
         return ToDoItemViewHolder(adapterLayout)
     }
 
-    @SuppressLint("ClickableViewAccessibility")
+    @SuppressLint("ClickableViewAccessibility") //will make a accessibility checkmark icon if I have time
     override fun onBindViewHolder(holder: ToDoItemViewHolder, position: Int) {
         val item = dataset[position]
         holder.textView.text = item.toDoItemTextID
         holder.imageView.setImageResource(item.toDoItemIconID)
-        holder.card.setOnClickListener {
-            Toast.makeText(holder.card.context, item.isDone.toString(), Toast.LENGTH_SHORT).show()
-        }
-        //lambda expression for on long click listener
-        holder.card.setOnLongClickListener {
-            Toast.makeText(holder.card.context, "swipe left to change!", Toast.LENGTH_SHORT).show()
-            true
-        }
-        //expression for on swipe listener from left
-        holder.card.setOnTouchListener { v, event ->
-            if (event.action == android.view.MotionEvent.ACTION_DOWN) {
-                v.parent.requestDisallowInterceptTouchEvent(true)
-                Toast.makeText(
-                    holder.card.context,
-                    item.toDoItemTextID + " removed!",
-                    Toast.LENGTH_SHORT
-                ).show()
-                val db = ToDoListDatabaseManager(holder.card.context, null)
-                db.modifyIsDoneState(
-                    item.toDoItemTextID, item.isDone
-                )
-                removeItem(position)
+        if (item.moveToNextDay) {
+            holder.deleteMarker.setImageResource(R.drawable.ic_baseline_next_day_64)
+        } else {
+            if (item.deleteTag) {
+                holder.deleteMarker.setImageResource(R.drawable.ic_baseline_delete_forever_24)
+            } else {
+                holder.deleteMarker.setImageResource(R.drawable.ic_baseline_check_24)
             }
-            false
         }
 
+
+
+        holder.deleteMarker.setOnClickListener {
+            Toast.makeText(holder.card.context, item.isDone.toString(), Toast.LENGTH_SHORT).show()
+
+            item.deleteTag = !item.deleteTag
+            notifyItemChanged(position)
+        }
+        //lambda expression for on long click listener
+
+
+        holder.deleteMarker.setOnLongClickListener {
+            item.moveToNextDay = !item.moveToNextDay
+            notifyItemChanged(position)
+            true
+        }
+
+        holder.card.setOnClickListener {
+            item.isDone = item.isDone xor 1
+            if (item.isDone == 1) {
+                holder.card.setCardBackgroundColor(getColor(holder.card.context,R.color.color_done))
+            } else {
+                holder.card.setCardBackgroundColor(getColor(holder.card.context,R.color.color_not_done))
+            }
+            notifyItemChanged(position)
+        }
 
     }
 
