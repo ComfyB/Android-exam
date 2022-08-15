@@ -14,7 +14,8 @@
         <TextView
             android:id="@+id/to_do_item_title"
             android:layout_width="230dp"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:textSize="20sp"/>
         <ImageView
             android:layout_width="80dp"
             android:padding="10dp"
@@ -23,8 +24,8 @@
             android:contentDescription="@string/item_checkmark_delete_marker" />
         <ImageView
             android:id="@+id/to_do_icon"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:contentDescription="@string/result_from_8_ball"
             />
 

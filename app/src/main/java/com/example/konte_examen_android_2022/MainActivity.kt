@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.konte_examen_android_2022.adapter.ToDoItemAdapter
 import com.example.konte_examen_android_2022.data.DataManager
 import com.example.konte_examen_android_2022.data.ToDoListDatabaseManager
+import com.example.konte_examen_android_2022.model.ToDoItem
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputLayout
 
@@ -34,6 +35,7 @@ class MainActivity : AppCompatActivity() {
         // makes sure content don't change the size of recyclerview
         recyclerView.setHasFixedSize(true)
 
+          //initialize the floating action button
         val addTodo =
             findViewById<FloatingActionButton>(R.id.floating_add_button)  //initialize the add button
         val todoTextField =
@@ -49,34 +51,37 @@ class MainActivity : AppCompatActivity() {
             lManager.showSoftInput(todoTextField, 0)
         }
 
-        fun leaveFocus(){
+        fun leaveFocus() {
             closeKeyBoard(todoTextField.windowToken)    //close the keyboard
             todoTextField.visibility = TextInputLayout.GONE //hide the text field
             addTodo.visibility = FloatingActionButton.VISIBLE   //show the button
         }
-        fun saveInput(){
+
+        fun saveInput() {
             val todoText =
                 todoTextField.editText?.text.toString()  //get the text from the text field
             if (todoText.isNotEmpty()) {    //if the text is not empty
-                DataManager().addTodo(this, todoText)   //add the todo to the database
+                 //add the todo to the database
+                // ugly hack to make the recycler view update when i add a new item.
+                // would have done this better if i thought of it earlier. :/
+                recyclerView.adapter = ToDoItemAdapter(this,  DataManager().addTodo(this, todoText) )
+
                 todoTextField.editText?.text?.clear()   //clear the text field
             }
             leaveFocus()
-
         }
 
         todoTextField.setEndIconOnClickListener {
             saveInput()
         }
         todoTextField.setOnKeyListener { _, keyCode, event ->
-            if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
+            if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) { //if the enter key is pressed
                 saveInput()
                 leaveFocus()
                 return@setOnKeyListener true
             }
             return@setOnKeyListener false
         }
-
 
 
     }
@@ -86,10 +91,7 @@ class MainActivity : AppCompatActivity() {
         imm.hideSoftInputFromWindow(token, 0)
     }
 
-    private fun openKeyBoard(view: View) {
-        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
-    }
+
 
 
     fun testData() {
