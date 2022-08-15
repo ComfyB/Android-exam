@@ -4,14 +4,13 @@ import android.content.Context
 import android.os.Bundle
 import android.os.IBinder
 import android.view.KeyEvent
-import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.konte_examen_android_2022.adapter.ToDoItemAdapter
 import com.example.konte_examen_android_2022.data.DataManager
 import com.example.konte_examen_android_2022.data.ToDoListDatabaseManager
-import com.example.konte_examen_android_2022.model.ToDoItem
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputLayout
 
@@ -22,6 +21,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         //set the layout
         setContentView(R.layout.activity_main)
+        testData() //load some testData
 
         //initialize the data manager
         val myDataset = DataManager().getTodoForToday(this, 0)
@@ -30,12 +30,12 @@ class MainActivity : AppCompatActivity() {
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
 
         //initialize the adapter to the recycler view
-        recyclerView.adapter = ToDoItemAdapter(this, myDataset)
+        val myAdapter = ToDoItemAdapter(this, myDataset)
+        recyclerView.adapter = myAdapter
 
         // makes sure content don't change the size of recyclerview
         recyclerView.setHasFixedSize(true)
-
-          //initialize the floating action button
+        //initialize the floating action button
         val addTodo =
             findViewById<FloatingActionButton>(R.id.floating_add_button)  //initialize the add button
         val todoTextField =
@@ -61,10 +61,10 @@ class MainActivity : AppCompatActivity() {
             val todoText =
                 todoTextField.editText?.text.toString()  //get the text from the text field
             if (todoText.isNotEmpty()) {    //if the text is not empty
-                 //add the todo to the database
+                //add the todo to the database
                 // ugly hack to make the recycler view update when i add a new item.
                 // would have done this better if i thought of it earlier. :/
-                recyclerView.adapter = ToDoItemAdapter(this,  DataManager().addTodo(this, todoText) )
+                recyclerView.adapter = ToDoItemAdapter(this, DataManager().addTodo(this, todoText))
 
                 todoTextField.editText?.text?.clear()   //clear the text field
             }
@@ -83,18 +83,33 @@ class MainActivity : AppCompatActivity() {
             return@setOnKeyListener false
         }
 
-
+        val confirmButton: MaterialButton = findViewById(R.id.button_bottom_todo_list)
+        //when clicked, update the db with whats completed etc.
+        confirmButton.setOnClickListener {
+            val db = ToDoListDatabaseManager(this, null)
+            val items = myAdapter.getItems() //get the items from the adapter
+            for (item in items) {  //for each item in the list But it doesn't get the data from the item in the recyclerview after you update it by clicking so it doesnt work.
+                if (item.isDone == 1) {
+                    db.modifyIsDoneState(
+                        item.toDoItemTextID,
+                        0
+                    ) // i flipped the isDone in the function a bit bad design
+                } else if (item.moveToNextDay) {
+                    db.moveToDoToTomorrow(item.toDoItemTextID)
+                }
+            }
+            recyclerView.adapter = ToDoItemAdapter(this, DataManager().getTodoForToday(this, 0))
+        }
     }
 
     private fun closeKeyBoard(token: IBinder) {
-        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(token, 0)
+        val imm =
+            getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager //get the input method manager
+        imm.hideSoftInputFromWindow(token, 0) //hide the keyboard
     }
 
 
-
-
-    fun testData() {
+    private fun testData() {
         val db: ToDoListDatabaseManager = ToDoListDatabaseManager(this, null)
         db.addToDo("lorem ip", 4)
         db.addToDo("lorem kom", 4)
